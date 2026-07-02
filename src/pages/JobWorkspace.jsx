@@ -35,7 +35,7 @@ Exclusions:
 - Pure consulting firm employees (TCS, Infosys, Wipro, Accenture, Cognizant, Capgemini) without prior product experience
 - Pure computer vision/speech without NLP exposure`;
 
-export default function JobWorkspace({ weights, setWeights }) {
+export default function JobWorkspace({ weights, setWeights, showToast }) {
   const [jdText, setJdText] = useState(PRELOADED_JD);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisDone, setAnalysisDone] = useState(true);
@@ -52,6 +52,9 @@ export default function JobWorkspace({ weights, setWeights }) {
     setTimeout(() => {
       setIsAnalyzing(false);
       setAnalysisDone(true);
+      if (showToast) {
+        showToast("✔️ Job requirements extracted successfully!");
+      }
     }, 1500);
   };
 

@@ -20,7 +20,8 @@ export default function CandidateDiscovery({
   setCurrentPage, 
   setSelectedCandidate,
   compareList,
-  setCompareList
+  setCompareList,
+  showToast
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [experienceRange, setExperienceRange] = useState('all');
@@ -95,11 +96,16 @@ export default function CandidateDiscovery({
     }));
   };
 
-  const toggleShortlist = (id) => {
+  const toggleShortlist = (candidate) => {
     setShortlist(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(candidate.candidate_id)) {
+        next.delete(candidate.candidate_id);
+        if (showToast) showToast(`Removed ${candidate.profile.anonymized_name} from shortlist.`);
+      } else {
+        next.add(candidate.candidate_id);
+        if (showToast) showToast(`Added ${candidate.profile.anonymized_name} to shortlist!`);
+      }
       return next;
     });
   };
@@ -108,12 +114,14 @@ export default function CandidateDiscovery({
     setCompareList(prev => {
       const index = prev.findIndex(c => c.candidate_id === candidate.candidate_id);
       if (index !== -1) {
+        if (showToast) showToast(`Removed ${candidate.profile.anonymized_name} from comparison.`);
         return prev.filter(c => c.candidate_id !== candidate.candidate_id);
       } else {
         if (prev.length >= 4) {
-          alert('You can compare up to 4 candidates at a time.');
+          if (showToast) showToast("⚠️ Can compare up to 4 candidates.");
           return prev;
         }
+        if (showToast) showToast(`Added ${candidate.profile.anonymized_name} to comparison!`);
         return [...prev, candidate];
       }
     });
@@ -346,7 +354,7 @@ export default function CandidateDiscovery({
                         </button>
 
                         <button 
-                          onClick={() => toggleShortlist(c.candidate_id)}
+                          onClick={() => toggleShortlist(c)}
                           className={`p-2.5 rounded-xl border transition-all ${
                             isInShortlist 
                               ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 

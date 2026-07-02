@@ -12,6 +12,7 @@ import AIInsights from './pages/AIInsights';
 import ReportsExport from './pages/ReportsExport';
 import Settings from './pages/Settings';
 import { candidates } from './data/candidatesData';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('landing');
@@ -19,6 +20,12 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [compareList, setCompareList] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Global Weights configuration
   const [weights, setWeights] = useState({
@@ -51,6 +58,7 @@ export default function App() {
             candidates={candidates} 
             setCurrentPage={setCurrentPage} 
             setSelectedCandidate={setSelectedCandidate} 
+            showToast={showToast}
           />
         );
       case 'discovery':
@@ -62,6 +70,7 @@ export default function App() {
             setSelectedCandidate={setSelectedCandidate}
             compareList={compareList}
             setCompareList={setCompareList}
+            showToast={showToast}
           />
         );
       case 'workspace':
@@ -69,6 +78,7 @@ export default function App() {
           <JobWorkspace 
             weights={weights} 
             setWeights={setWeights} 
+            showToast={showToast}
           />
         );
       case 'detail':
@@ -76,6 +86,7 @@ export default function App() {
           <CandidateDetail 
             candidate={selectedCandidate} 
             setCurrentPage={setCurrentPage} 
+            showToast={showToast}
           />
         );
       case 'compare':
@@ -84,18 +95,21 @@ export default function App() {
             compareList={compareList} 
             setCompareList={setCompareList}
             setCurrentPage={setCurrentPage} 
+            showToast={showToast}
           />
         );
       case 'insights':
         return (
           <AIInsights 
             candidates={candidates} 
+            showToast={showToast}
           />
         );
       case 'reports':
         return (
           <ReportsExport 
             candidates={candidates} 
+            showToast={showToast}
           />
         );
       case 'settings':
@@ -105,6 +119,7 @@ export default function App() {
             setUser={setUser} 
             weights={weights} 
             setWeights={setWeights} 
+            showToast={showToast}
           />
         );
       default:
@@ -127,7 +142,7 @@ export default function App() {
 
   // Dashboard / Workspace layout shell
   return (
-    <div className="flex bg-slate-50 min-h-screen text-slate-800">
+    <div className="flex bg-slate-50 min-h-screen text-slate-800 relative">
       {/* Sidebar Navigation */}
       <Sidebar 
         currentPage={currentPage} 
@@ -145,6 +160,14 @@ export default function App() {
           {renderActivePage()}
         </main>
       </div>
+
+      {/* Global success checkmark/toast alert */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-emerald-500 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-2.5 z-[9999] animate-bounce font-sans font-semibold text-xs border border-emerald-400">
+          <CheckCircle2 className="w-4.5 h-4.5 text-white shrink-0" />
+          <span>{toast}</span>
+        </div>
+      )}
     </div>
   );
 }

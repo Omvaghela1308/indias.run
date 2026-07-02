@@ -13,8 +13,9 @@ import {
   Cell
 } from 'recharts';
 
-export default function AIInsights({ candidates }) {
+export default function AIInsights({ candidates, showToast }) {
   const [chatInput, setChatInput] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [chatLog, setChatLog] = useState([
     { role: 'bot', text: "Hello! I am your TalentLens AI Copilot. Ask me any question about the candidate dataset, rankings, or talent distributions." }
   ]);
@@ -35,11 +36,12 @@ export default function AIInsights({ candidates }) {
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isGenerating) return;
 
     const userText = chatInput.trim();
     setChatLog(prev => [...prev, { role: 'user', text: userText }]);
     setChatInput('');
+    setIsGenerating(true);
 
     // Generate mock response based on prompt text
     setTimeout(() => {
@@ -57,7 +59,11 @@ export default function AIInsights({ candidates }) {
       }
 
       setChatLog(prev => [...prev, { role: 'bot', text: botResponse }]);
-    }, 1000);
+      setIsGenerating(false);
+      if (showToast) {
+        showToast("✔️ Copilot response generated!");
+      }
+    }, 1200);
   };
 
   const handlePredefinedQuestion = (q) => {
@@ -160,6 +166,17 @@ export default function AIInsights({ candidates }) {
                   </div>
                 </div>
               ))}
+
+              {isGenerating && (
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold bg-brand-50 text-brand-650">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <div className="p-3 rounded-2xl text-xs leading-relaxed max-w-[85%] bg-slate-50 text-slate-400 rounded-tl-none radar-scan-container w-28 h-10 flex items-center justify-center">
+                    <span className="animate-pulse">Thinking...</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -174,7 +191,8 @@ export default function AIInsights({ candidates }) {
                 <button 
                   key={i} 
                   onClick={() => handlePredefinedQuestion(q)}
-                  className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 text-[10px] font-bold px-2 py-1 rounded-lg transition-all"
+                  disabled={isGenerating}
+                  className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 text-[10px] font-bold px-2 py-1 rounded-lg transition-all disabled:opacity-50"
                 >
                   {q.slice(0, 35)}...
                 </button>
@@ -184,14 +202,16 @@ export default function AIInsights({ candidates }) {
             <form onSubmit={handleSend} className="flex gap-2">
               <input
                 type="text"
-                placeholder="Ask your AI Recruiter Copilot..."
+                placeholder={isGenerating ? "AI Copilot is thinking..." : "Ask your AI Recruiter Copilot..."}
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                className="flex-grow px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-brand-500 focus:bg-white text-slate-800"
+                disabled={isGenerating}
+                className="flex-grow px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-brand-500 focus:bg-white text-slate-800 disabled:opacity-60"
               />
               <button 
                 type="submit"
-                className="brand-gradient-bg p-2 rounded-xl text-white hover:shadow-md transition-all shrink-0"
+                disabled={isGenerating || !chatInput.trim()}
+                className="brand-gradient-bg p-2 rounded-xl text-white hover:shadow-md transition-all shrink-0 disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
               </button>

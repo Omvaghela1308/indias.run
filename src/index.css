@@ -56,3 +56,64 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Cards hover depth, transition and micro-interactions */
+.glass-card, .glass-panel, .glow-hover, div[class*="shadow-sm"], div[class*="shadow-md"] {
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, border-color 150ms ease-out !important;
+}
+
+.glass-card:hover, .glass-panel:hover, .glow-hover:hover, div[class*="shadow-sm"]:hover, div[class*="shadow-md"]:hover {
+  transform: translateY(-4px) scale(1.005) !important;
+  box-shadow: 0 14px 40px rgba(99, 102, 241, 0.08) !important;
+  border-color: rgba(99, 102, 241, 0.25) !important;
+}
+
+/* Legible legends & tooltips for Recharts */
+.recharts-legend-item-text {
+  color: #1e293b !important;
+  font-size: 12px !important;
+  font-weight: 550 !important;
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(31, 38, 135, 0.08) !important;
+  padding: 10px 14px !important;
+}
+
+/* Horizontal scanline loader keyframe animation */
+@keyframes scanline {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+.radar-scan-container {
+  position: relative;
+  overflow: hidden;
+  background: rgba(99, 102, 241, 0.03);
+  border: 1px dashed rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+}
+
+.radar-scan-container::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #6366f1, transparent);
+  box-shadow: 0 0 8px #6366f1;
+  animation: scanline 2.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Standardized hr spacing */
+hr {
+  margin-top: 28px !important;
+  margin-bottom: 28px !important;
+  border-color: rgba(226, 232, 240, 0.8) !important;
+}

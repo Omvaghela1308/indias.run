@@ -11,7 +11,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-export default function ReportsExport({ candidates }) {
+export default function ReportsExport({ candidates, showToast }) {
   const [validationReport, setValidationReport] = useState(null);
   const [isValidating, setIsValidating] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
@@ -54,6 +54,9 @@ export default function ReportsExport({ candidates }) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    if (showToast) {
+      showToast("✔️ Download started successfully!");
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -163,6 +166,13 @@ export default function ReportsExport({ candidates }) {
       checkedRows: dataRows.length,
       fileName
     });
+    if (showToast) {
+      if (errors.length === 0) {
+        showToast("✔️ CSV validation completed successfully!");
+      } else {
+        showToast("❌ CSV validation failed with errors!");
+      }
+    }
   };
 
   return (
@@ -185,13 +195,18 @@ export default function ReportsExport({ candidates }) {
               Download the generated 100-candidate ranking list in the official CSV format. The download is pre-formatted with your custom AI scoring metrics, unique non-overlapping ranks, and explainable justifications.
             </p>
 
-            <button
-              onClick={handleDownloadSample}
-              className="w-full brand-gradient-bg py-3.5 rounded-2xl font-bold text-xs hover:shadow-lg hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              Download Shortlist CSV (100 Rows)
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={handleDownloadSample}
+                className="w-full brand-gradient-bg py-3.5 rounded-2xl font-bold text-xs hover:shadow-lg hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Download Shortlist CSV (100 Rows)
+              </button>
+              <div className="text-[10px] text-slate-400 text-center font-medium">
+                Format: CSV • Expected Size: ~8.2 KB
+              </div>
+            </div>
           </div>
 
           {/* Submission reference specs information */}
@@ -230,7 +245,7 @@ export default function ReportsExport({ candidates }) {
           </p>
 
           {/* Upload Input */}
-          <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-300 transition-colors bg-slate-50/50 relative">
+          <div className={`border-2 border-dashed border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-300 transition-colors bg-slate-50/50 relative ${isValidating ? 'radar-scan-container' : ''}`}>
             <input 
               type="file" 
               accept=".csv"

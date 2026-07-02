@@ -1,13 +1,19 @@
 import React from 'react';
 import { Users, ArrowLeft, Check, AlertTriangle, Sparkles } from 'lucide-react';
 
-export default function CandidateComparison({ compareList, setCompareList, setCurrentPage }) {
+export default function CandidateComparison({ compareList, setCompareList, setCurrentPage, showToast }) {
   const handleRemove = (candidate) => {
     setCompareList(prev => prev.filter(c => c.candidate_id !== candidate.candidate_id));
+    if (showToast) {
+      showToast(`Removed ${candidate.profile.anonymized_name} from comparison.`);
+    }
   };
 
   const handleClear = () => {
     setCompareList([]);
+    if (showToast) {
+      showToast("Comparison list cleared.");
+    }
     setCurrentPage('discovery');
   };
 
@@ -24,7 +30,7 @@ export default function CandidateComparison({ compareList, setCompareList, setCu
         </button>
         <button 
           onClick={handleClear}
-          className="text-xs text-red-600 font-bold hover:underline"
+          className="text-xs text-red-650 font-bold hover:underline"
         >
           Clear Comparison ({compareList.length})
         </button>
@@ -36,10 +42,12 @@ export default function CandidateComparison({ compareList, setCompareList, setCu
       </div>
 
       {compareList.length === 0 ? (
-        <div className="bg-white p-16 rounded-3xl border border-slate-100 shadow-sm text-center text-slate-450 space-y-3">
-          <Users className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="font-bold text-slate-800">No candidates selected</h3>
-          <p className="text-xs max-w-xs mx-auto">Go to the Candidate Discovery page and click "Compare" on candidates you want to review side-by-side.</p>
+        <div className="bg-amber-50/50 p-16 rounded-3xl border border-amber-250/60 shadow-sm text-center text-amber-900 space-y-4 max-w-2xl mx-auto backdrop-blur-md">
+          <Users className="w-12 h-12 text-amber-500 mx-auto animate-pulse" />
+          <h3 className="text-lg font-black tracking-tight text-slate-900 uppercase">Awaiting Comparison Inputs</h3>
+          <p className="text-xs max-w-md mx-auto text-slate-650 leading-relaxed font-normal">
+            No candidates have been selected for comparative analysis. Navigate to the <strong className="text-brand-650 cursor-pointer hover:underline font-semibold" onClick={() => setCurrentPage('discovery')}>Candidate Discovery</strong> console and activate the comparison checkbox on candidate files.
+          </p>
         </div>
       ) : (
         <div className="space-y-8">
